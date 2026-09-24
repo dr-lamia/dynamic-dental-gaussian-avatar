@@ -1,0 +1,29 @@
+# Patient and restricted data
+/data/
+/patient_data/
+*.dcm
+*.nii
+*.nii.gz
+*.stl
+*.ply
+*.obj
+*.mp4
+*.mov
+
+# Model checkpoints
+*.pth
+*.pt
+*.ckpt
+
+# Credentials
+.env
+*.key
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+
+# Outputs
+outputs/
+runs/
