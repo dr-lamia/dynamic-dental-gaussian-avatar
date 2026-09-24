@@ -1,0 +1,11 @@
+{
+  "case_id": "DEMO_ONLY",
+  "video": "/secure/patient_001/video.mp4",
+  "upper_mesh": "/secure/patient_001/upper.stl",
+  "lower_mesh": "/secure/patient_001/lower.stl",
+  "design_meshes": [
+    "/secure/patient_001/design_a.stl"
+  ],
+  "bite_mesh": "/secure/patient_001/bite.stl",
+  "notes": "Paths are examples only. Do not commit patient files."
+}
