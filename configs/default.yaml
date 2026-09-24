@@ -1,0 +1,26 @@
+project:
+  name: dynamic-dental-gaussian-avatar
+  units: mm
+
+avatar:
+  backend: placeholder
+  tracking_backend: vhap
+
+inputs:
+  video: data/patient/video.mp4
+  upper_mesh: data/patient/upper.stl
+  lower_mesh: data/patient/lower.stl
+  design_mesh: data/patient/design_a.stl
+
+registration:
+  method: manual_landmarks_then_icp
+  upper_fixed_to_skull: true
+  lower_follows_mandible: true
+
+render:
+  width: 1024
+  height: 1024
+  fps: 30
+
+privacy:
+  allow_patient_data_in_repo: false
