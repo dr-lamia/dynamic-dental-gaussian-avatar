@@ -1,0 +1,3 @@
+numpy>=1.26
+PyYAML>=6.0
+# Add torch / CUDA / Open3D / PyTorch3D versions after selecting the avatar backend.
