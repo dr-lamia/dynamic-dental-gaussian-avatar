@@ -1,0 +1,9 @@
+{
+  "frames": 6,
+  "duration_s": 0.083,
+  "path_length_mm": 8.158431221748456,
+  "max_displacement_from_start_mm": 4.079215610874228,
+  "max_rotation_from_start_deg": 3.0003415532283375,
+  "max_jaw_opening_mm": 8.0,
+  "note": "Expected metrics for examples/jaw_motion.example.csv; synthetic engineering check only."
+}
