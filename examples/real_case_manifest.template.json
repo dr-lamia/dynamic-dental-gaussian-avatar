@@ -1,0 +1,12 @@
+{
+  "case_id": "P001",
+  "video": "facial_video.mp4",
+  "upper_mesh": "upper_ios.stl",
+  "lower_mesh": "lower_ios.stl",
+  "design_meshes": [
+    "design_A.stl"
+  ],
+  "bite_mesh": "bite.stl",
+  "jaw_motion_csv": "jaw_motion.csv",
+  "notes": "Use a pseudonymous case ID. Keep patient-identifiable source data outside public GitHub."
+}
