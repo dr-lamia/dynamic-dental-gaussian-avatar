@@ -12,6 +12,7 @@ def main() -> None:
     p.add_argument("--lower", required=True)
     p.add_argument("--design", action="append", required=True)
     p.add_argument("--bite")
+    p.add_argument("--jaw-motion", help="Standardized jaw-motion CSV")
     p.add_argument("--out", default="data/local_case.json")
     a = p.parse_args()
 
@@ -22,6 +23,7 @@ def main() -> None:
         lower_mesh=a.lower,
         design_meshes=a.design,
         bite_mesh=a.bite,
+        jaw_motion_csv=a.jaw_motion,
     )
     out = Path(a.out)
     out.parent.mkdir(parents=True, exist_ok=True)

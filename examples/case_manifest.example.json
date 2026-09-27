@@ -7,5 +7,6 @@
     "/secure/patient_001/design_a.stl"
   ],
   "bite_mesh": "/secure/patient_001/bite.stl",
+  "jaw_motion_csv": "/secure/patient_001/jaw_motion.csv",
   "notes": "Paths are examples only. Do not commit patient files."
 }

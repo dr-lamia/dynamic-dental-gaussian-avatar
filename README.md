@@ -1,10 +1,10 @@
 # Dynamic Dental Gaussian Avatar
 
-**A research prototype for integrating photorealistic dynamic facial avatars with patient-specific intraoral 3D geometry to test 3D smile designs during facial movement.**
+**A research prototype for integrating photorealistic dynamic facial avatars with patient-specific intraoral 3D geometry and mandibular motion to test 3D smile designs during movement.**
 
 ## Vision
 
-Create a **moving 3D/4D virtual dental patient** from facial video and intraoral scans. The same recorded facial motion can be replayed while switching between the original dentition and one or more proposed CAD smile designs.
+Create a **moving 3D/4D virtual dental patient** from facial video, intraoral scans and a jaw-motion stream. The same recorded facial and mandibular motion can be replayed while switching between the original dentition and one or more proposed CAD smile designs.
 
 ## MVP input
 
@@ -13,16 +13,18 @@ Create a **moving 3D/4D virtual dental patient** from facial video and intraoral
 - lower IOS
 - bite scan or registration information
 - proposed smile-design mesh
+- optional standardized jaw-motion CSV for the first static/dynamic prototypes; required for a true patient-specific mandibular-motion experiment
 
 ## MVP output
 
 An interactive patient avatar supporting:
 
 - rest / social smile / maximum smile
-- mouth opening and closing
+- measured or estimated mouth opening and closing
+- protrusive and lateral mandibular motion when jaw tracking is available
 - head rotation
 - original-vs-design toggle
-- multiple candidate designs on identical facial motion
+- multiple candidate designs on identical motion
 - screenshots/video export for research comparison
 
 ## Core design principle
@@ -40,11 +42,26 @@ Dynamic Gaussian facial avatar
     ↓
 Hybrid dental integration layer
     ├── upper IOS mesh → skull/maxillary coordinate system
-    ├── lower IOS mesh → mandibular transform
+    ├── lower IOS mesh → mandibular coordinate system
+    ├── jaw-motion stream → per-frame mandible→face transform
     └── replaceable CAD smile-design mesh
     ↓
 Motion-aware smile visualization + quantitative analytics
 ```
+
+## New: patient-specific jaw-motion layer
+
+The repository now includes `src/dental/jaw_motion.py`, which standardizes tracker outputs as per-frame rigid transforms.
+
+Supported CSV pose encodings:
+
+- quaternion: `tx_mm,ty_mm,tz_mm,qw,qx,qy,qz`
+- Euler XYZ: `tx_mm,ty_mm,tz_mm,rx_deg,ry_deg,rz_deg`
+- full homogeneous matrix: `m00 ... m33`
+
+Optional columns include `timestamp_s` and `jaw_opening_mm`.
+
+See [docs/PHASE1_4D_JAW_MOTION.md](docs/PHASE1_4D_JAW_MOTION.md).
 
 ## Candidate upstream projects to benchmark
 
@@ -58,8 +75,9 @@ Motion-aware smile visualization + quantitative analytics
 - DECA — https://github.com/yfeng95/DECA
 - 3DTeethLand — https://github.com/nnistelrooij/3dteethland
 - SlicerAutomatedDentalTools — https://github.com/DCBIA-OrthoLab/SlicerAutomatedDentalTools
+- JawTrackingSystem — https://github.com/paulotto/jaw_tracking_system
 
-> Upstream licenses differ. Do not copy/relicense upstream code until compatibility has been checked. GaussianAvatars, for example, has non-commercial restrictions in its published repository license.
+> Upstream licenses differ. Do not copy/relicense upstream code until compatibility has been checked.
 
 ## Repository layout
 
@@ -67,10 +85,10 @@ Motion-aware smile visualization + quantitative analytics
 src/
   avatar/        # adapter interfaces for avatar backends
   tracking/      # FLAME/head-pose/expression tracking
-  dental/        # IOS loading, tooth labels, dental geometry
+  dental/        # IOS loading, jaw motion, tooth labels, dental geometry
   registration/  # face↔IOS and design↔IOS transforms
   rendering/     # hybrid face + dental renderer
-  analytics/     # smile and visibility metrics
+  analytics/     # smile, stability and visibility metrics
 configs/         # YAML configuration
 scripts/         # runnable pipeline stages
 docs/            # architecture, MVP, research plan
@@ -90,26 +108,30 @@ Load upper/lower IOS, maintain metric scale, identify arches/teeth, and render t
 ### Phase 3 — Registration
 Register the dental coordinate system to the facial avatar. Begin with manually assisted landmarks + rigid transformation; later automate.
 
-### Phase 4 — Replaceable smile design
-Swap anterior restorative geometry without changing facial motion.
+### Phase 4 — Jaw-motion integration
+Convert a patient jaw-motion recording into synchronized `mandible_to_face(t)` transforms and drive the lower IOS independently from the maxilla.
 
-### Phase 5 — Motion analytics
-Measure tooth/lip visibility and smile-design behavior across frames.
+### Phase 5 — Replaceable smile design
+Swap anterior restorative geometry without changing facial or mandibular motion.
 
-### Phase 6 — Validation
+### Phase 6 — Motion analytics
+Measure tooth/lip visibility, jaw trajectory and smile-design behavior across frames.
+
+### Phase 7 — Validation
 Compare virtual measurements against reference measurements and clinician ratings on paired patient data.
 
 ## First success criterion
 
-For one patient, reproduce a tracked smile sequence and correctly display:
+For one patient, reproduce a tracked smile/movement sequence and correctly display:
 
 1. original upper dentition,
-2. proposed veneer/smile STL,
-3. identical facial movement for both,
-4. stable dental registration across the sequence.
+2. measured lower-arch movement,
+3. proposed veneer/smile STL,
+4. identical motion for original and proposed designs,
+5. stable dental registration across the sequence.
 
 That is the first publishable engineering proof of concept.
 
 ## Safety and privacy
 
-Never commit identifiable patient video, face geometry, DICOM data or unredacted clinical data to this repository. Use institutionally approved storage and access controls.
+Never commit identifiable patient video, face geometry, DICOM data, jaw-motion files containing identifiers, or unredacted clinical data to this repository. Use institutionally approved storage and access controls.
