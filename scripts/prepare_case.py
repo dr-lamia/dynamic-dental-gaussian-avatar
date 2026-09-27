@@ -1,6 +1,12 @@
 """Create a local patient-case manifest without copying patient data into Git."""
 from argparse import ArgumentParser
 from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from src.dental.case_manifest import CaseManifest
 
 
