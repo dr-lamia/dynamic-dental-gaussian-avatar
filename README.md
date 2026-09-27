@@ -63,6 +63,18 @@ Optional columns include `timestamp_s` and `jaw_opening_mm`.
 
 See [docs/PHASE1_4D_JAW_MOTION.md](docs/PHASE1_4D_JAW_MOTION.md).
 
+## Runnable public Phase-1 demo
+
+A fully synthetic, patient-free 4D engineering demo is included:
+
+```bash
+python scripts/run_phase1_4d_demo.py
+```
+
+It generates per-frame upper, lower and Design A OBJ meshes plus `metrics.json`, `trajectory.csv` and a summary. With the bundled example jaw trajectory, the expected engineering outputs are stored in [examples/phase1_4d_demo_expected_metrics.json](examples/phase1_4d_demo_expected_metrics.json).
+
+See [docs/RUN_PHASE1_4D_DEMO.md](docs/RUN_PHASE1_4D_DEMO.md).
+
 ## Candidate upstream projects to benchmark
 
 - GaussianAvatars — https://github.com/ShenhanQian/GaussianAvatars
