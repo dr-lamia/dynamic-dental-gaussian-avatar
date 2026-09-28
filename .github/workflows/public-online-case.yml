@@ -24,8 +24,10 @@ jobs:
 
       - name: Install lightweight dependencies
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq p7zip-full
           python -m pip install --upgrade pip
-          pip install numpy requests beautifulsoup4
+          pip install numpy requests beautifulsoup4 pandas openpyxl
 
       - name: Download public dental sample
         run: |
@@ -38,6 +40,8 @@ jobs:
           mkdir -p online_case/jaw
           wget -q --show-progress -O online_case/jaw/jaw_figshare.zip             https://figshare.com/ndownloader/articles/13397528/versions/1
           unzip -o online_case/jaw/jaw_figshare.zip -d online_case/jaw/extracted
+          mkdir -p online_case/jaw/unpacked
+          7z x -y "online_case/jaw/extracted/Position Datasets.7z" -oonline_case/jaw/unpacked
 
       - name: Download mesh-only MultiFace subset
         run: |
