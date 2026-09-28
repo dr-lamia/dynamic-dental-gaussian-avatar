@@ -1,0 +1,13 @@
+{
+  "entity": ["6795937"],
+  "image": false,
+  "mesh": true,
+  "texture": false,
+  "metadata": true,
+  "audio": false,
+  "expression": [
+    "E001_Neutral_Eyes_Open",
+    "E009_Smile_Mouth_Open",
+    "E029_Show_All_Teeth"
+  ]
+}
