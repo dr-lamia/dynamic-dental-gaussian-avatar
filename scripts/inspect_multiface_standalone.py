@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 
 
 EXPRESSIONS = [
@@ -15,22 +16,34 @@ EXPRESSIONS = [
     "E029_Show_All_Teeth",
 ]
 
+_FLOAT_RE = re.compile(
+    r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+)
+
 
 def load_headpose_matrix(path: Path):
-    rows = []
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        parts = line.strip().split()
-        if not parts:
-            continue
-        try:
-            row = [float(x) for x in parts]
-        except ValueError:
-            continue
-        if len(row) == 4:
-            rows.append(row)
-    if len(rows) < 4:
-        raise ValueError(f"Could not parse 4x4 matrix from {path}")
-    return rows[:4]
+    """Parse MultiFace head-pose text robustly.
+
+    Accepts whitespace, comma/bracket formatted 4x4 matrices, and 3x4 matrices.
+    """
+    text = path.read_text(encoding="utf-8", errors="replace")
+    values = [float(x) for x in _FLOAT_RE.findall(text)]
+
+    if len(values) >= 16:
+        values = values[:16]
+        return [values[i:i + 4] for i in range(0, 16, 4)]
+
+    if len(values) >= 12:
+        values = values[:12]
+        rows = [values[i:i + 4] for i in range(0, 12, 4)]
+        rows.append([0.0, 0.0, 0.0, 1.0])
+        return rows
+
+    preview = text[:300].replace("\n", " | ")
+    raise ValueError(
+        f"Could not parse transform from {path}. "
+        f"Found only {len(values)} numeric values. File preview: {preview}"
+    )
 
 
 def inspect(root: Path):

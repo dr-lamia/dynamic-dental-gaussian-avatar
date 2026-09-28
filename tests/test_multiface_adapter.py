@@ -32,3 +32,28 @@ def test_headpose_matrix_parser(tmp_path):
     M = load_headpose_matrix(path)
     assert M.shape == (4, 4)
     assert np.allclose(M[:3, 3], [1, 2, 3])
+
+
+def test_headpose_parser_accepts_brackets_and_commas(tmp_path):
+    path = tmp_path / "bracket_transform.txt"
+    path.write_text(
+        "[[1, 0, 0, 1],\n"
+        " [0, 1, 0, 2],\n"
+        " [0, 0, 1, 3],\n"
+        " [0, 0, 0, 1]]\n",
+        encoding="utf-8",
+    )
+    M = load_headpose_matrix(path)
+    assert np.allclose(M[:3, 3], [1, 2, 3])
+
+
+def test_headpose_parser_promotes_3x4(tmp_path):
+    path = tmp_path / "three_by_four_transform.txt"
+    path.write_text(
+        "1,0,0,1\n0,1,0,2\n0,0,1,3\n",
+        encoding="utf-8",
+    )
+    M = load_headpose_matrix(path)
+    assert M.shape == (4, 4)
+    assert np.allclose(M[3], [0, 0, 0, 1])
+    assert np.allclose(M[:3, 3], [1, 2, 3])

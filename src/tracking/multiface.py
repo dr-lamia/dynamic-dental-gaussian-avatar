@@ -3,7 +3,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import numpy as np
+
+
+_FLOAT_RE = re.compile(
+    r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
+)
 
 
 @dataclass(frozen=True)
@@ -32,31 +38,27 @@ class MultiFaceSequence:
 
 
 def load_headpose_matrix(path: str | Path) -> np.ndarray:
-    """Load a MultiFace *_transform.txt 4x4 matrix.
+    """Load a MultiFace head-pose transform.
 
-    The official MultiFace data structure documents one head-pose transform file
-    alongside each tracked OBJ frame. This loader accepts whitespace-separated
-    matrices with optional extra blank lines.
+    Accepts 4x4 or 3x4 matrices written with whitespace, commas, brackets,
+    or scientific notation. A 3x4 matrix is promoted to homogeneous 4x4 form.
     """
     path = Path(path)
-    rows = []
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        parts = line.strip().split()
-        if not parts:
-            continue
-        try:
-            row = [float(x) for x in parts]
-        except ValueError:
-            continue
-        if len(row) == 4:
-            rows.append(row)
+    text = path.read_text(encoding="utf-8", errors="replace")
+    values = [float(x) for x in _FLOAT_RE.findall(text)]
 
-    if len(rows) < 4:
-        raise ValueError(f"Could not parse a 4x4 transform from {path}")
+    if len(values) >= 16:
+        matrix = np.asarray(values[:16], dtype=float).reshape(4, 4)
+    elif len(values) >= 12:
+        matrix = np.eye(4, dtype=float)
+        matrix[:3, :] = np.asarray(values[:12], dtype=float).reshape(3, 4)
+    else:
+        preview = text[:300].replace("\n", " | ")
+        raise ValueError(
+            f"Could not parse transform from {path}; "
+            f"found {len(values)} numeric values. Preview: {preview}"
+        )
 
-    matrix = np.asarray(rows[:4], dtype=float)
-    if matrix.shape != (4, 4):
-        raise ValueError(f"Expected 4x4 transform in {path}")
     if not np.all(np.isfinite(matrix)):
         raise ValueError(f"Non-finite values in {path}")
     return matrix
