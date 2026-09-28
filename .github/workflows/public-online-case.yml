@@ -1,0 +1,68 @@
+name: public-online-case
+
+on:
+  push:
+    branches: ["public-online-case-run"]
+    paths:
+      - ".github/workflows/public-online-case.yml"
+      - "scripts/inspect_public_online_case.py"
+      - "scripts/build_public_online_case.py"
+      - "src/**"
+      - "configs/public_composite_benchmark.yaml"
+  workflow_dispatch:
+
+jobs:
+  build-public-case:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install lightweight dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy requests beautifulsoup4
+
+      - name: Download public dental sample
+        run: |
+          mkdir -p online_case/dental
+          wget -q --show-progress -O online_case/dental/0EJBIPTC_lower.obj             https://raw.githubusercontent.com/abenhamadou/3DTeethSeg_MICCAI_Challenges/main/refrence_algorithm_submission/test/0EJBIPTC_lower.obj
+          wget -q --show-progress -O online_case/dental/0EJBIPTC_upper.vtk             https://raw.githubusercontent.com/DCBIA-OrthoLab/3DTeethSeg22_challenge/master/test/test_local/0EJBIPTC_upper.vtk
+
+      - name: Download public jaw-motion dataset
+        run: |
+          mkdir -p online_case/jaw
+          wget -q --show-progress -O online_case/jaw/jaw_figshare.zip             https://figshare.com/ndownloader/articles/13397528/versions/1
+          unzip -o online_case/jaw/jaw_figshare.zip -d online_case/jaw/extracted
+
+      - name: Download mesh-only MultiFace subset
+        run: |
+          git clone --depth 1 https://github.com/facebookresearch/multiface.git /tmp/multiface
+          cat > /tmp/multiface/mesh_only_config.json <<'JSON'
+          {
+            "entity": ["6795937"],
+            "image": false,
+            "mesh": true,
+            "texture": false,
+            "metadata": false,
+            "audio": false,
+            "expression": ["E061_Lips_Puffed"]
+          }
+          JSON
+          mkdir -p online_case/face
+          cd /tmp/multiface
+          python download_dataset.py             --dest "$GITHUB_WORKSPACE/online_case/face/"             --download_config mesh_only_config.json
+
+      - name: Inspect downloaded sources
+        run: python scripts/inspect_public_online_case.py
+
+      - name: Upload compact inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-online-case-inventory
+          path: online_case/inventory.json
+          retention-days: 7
