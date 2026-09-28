@@ -1,0 +1,52 @@
+benchmark_id: public-composite-4d-v1
+label: Composite public-data 4D dental benchmark
+claim_level: engineering_benchmark_not_patient_specific
+purpose: >
+  Develop and test registration, rendering, motion, and analytics modules using
+  public online datasets without claiming that all modalities belong to one person.
+
+components:
+  dental:
+    source_name: 3D multimodal dental dataset based on CBCT and oral scan
+    source_url: https://figshare.com/articles/dataset/_b_3D_multimodal_dental_dataset_based_on_CBCT_and_oral_scan_b_/26965903
+    license: CC BY 4.0
+    reported_size: 289 paired subjects
+    use: >
+      Select one paired subject for dental anatomy and CBCT-IOS registration.
+      Preserve the original subject pairing inside this component.
+
+  face_motion:
+    source_name: MultiFace
+    source_url: https://github.com/facebookresearch/multiface
+    access_url: https://github.com/facebookresearch/multiface
+    license_note: Verify and comply with the repository/dataset license before use.
+    reported_size: 13 identities; tracked meshes, head pose, multiview video, audio
+    use: >
+      Use one identity/expression subset for dynamic face/head motion.
+      This identity is not assumed to match the dental subject.
+
+  jaw_motion_engineering:
+    source_name: Accelerometry-enhanced Magnetic Sensor for Intra-oral Continuous Jaw Motion Tracking
+    source_url: https://figshare.com/articles/dataset/Accelerometry-enhanced_Magnetic_Sensor_for_Intra-oral_Continuous_Jaw_Motion_Tracking_and_Bruxism_Detection/13397528
+    license: CC BY 4.0
+    reported_size: 56.41 kB
+    use: >
+      Use the published engineering/simulator trajectory data to test trajectory
+      ingestion and motion analytics. Do not describe it as clinical patient motion.
+
+  jaw_kinematics_reference:
+    source_name: Premolar extraction in orthodontics and its effect on mandibular kinematics
+    source_url: https://data.mendeley.com/datasets/3tcs5c47jg
+    license: CC BY 4.0
+    reported_size: 90 subjects
+    use: >
+      Use the clinical CADIAX-derived measurements as an external reference for
+      plausible kinematic ranges and group-level validation, not as a synchronized
+      frame-by-frame trajectory for another subject.
+
+rules:
+  - Never describe the composite as a patient-specific digital twin.
+  - Never merge identifiers across source datasets.
+  - Preserve source, license, subject/component ID, and original coordinate units.
+  - Report module-level results separately from same-patient validation.
+  - Any later patient-specific claim requires synchronized modalities from one person.

@@ -75,6 +75,35 @@ It generates per-frame upper, lower and Design A OBJ meshes plus `metrics.json`,
 
 See [docs/RUN_PHASE1_4D_DEMO.md](docs/RUN_PHASE1_4D_DEMO.md).
 
+## Public online-dataset benchmark mode
+
+If no same-patient clinical case is available, the repository can now run a **composite public-data benchmark** using separate online datasets for:
+
+- paired dental anatomy / CBCT-IOS registration,
+- dynamic face/head motion,
+- jaw-motion engineering,
+- clinical jaw-kinematics reference.
+
+This mode is intentionally labeled **engineering benchmark, not patient-specific**.
+
+Configuration:
+[configs/public_composite_benchmark.yaml](configs/public_composite_benchmark.yaml)
+
+Workflow:
+[docs/PUBLIC_COMPOSITE_4D_BENCHMARK.md](docs/PUBLIC_COMPOSITE_4D_BENCHMARK.md)
+
+Create a provenance manifest with:
+
+```bash
+python scripts/create_public_composite_manifest.py \
+  --dental-path data/public_benchmark/dental/subject_001 \
+  --dental-id PUBLIC_DENTAL_ID \
+  --face-path data/public_benchmark/face/multiface_subject \
+  --face-id PUBLIC_FACE_ID \
+  --jaw-path data/public_benchmark/jaw/figshare_motion \
+  --jaw-id SIMULATOR_TRAJECTORY
+```
+
 ## Candidate upstream projects to benchmark
 
 - GaussianAvatars — https://github.com/ShenhanQian/GaussianAvatars
