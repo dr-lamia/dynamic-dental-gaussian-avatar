@@ -7,6 +7,7 @@ from pathlib import Path
 import zipfile
 
 import numpy as np
+from scipy.io import loadmat
 
 
 def _obj_vertices(path: Path) -> np.ndarray:
@@ -63,15 +64,37 @@ def _text_preview(path: Path, max_chars=1200):
         return None
 
 
+def _mat_summary(path: Path) -> dict:
+    data=loadmat(path)
+    variables={}
+    for key,value in data.items():
+        if key.startswith("__"):
+            continue
+        arr=np.asarray(value)
+        item={"shape":list(arr.shape),"dtype":str(arr.dtype)}
+        if np.issubdtype(arr.dtype, np.number) and arr.size:
+            flat=arr.astype(float)
+            item["min"]=float(np.nanmin(flat))
+            item["max"]=float(np.nanmax(flat))
+            item["mean"]=float(np.nanmean(flat))
+            if arr.size <= 100:
+                item["values"]=arr.tolist()
+        variables[key]=item
+    return {"path":str(path),"variables":variables}
+
+
 def inspect_jaw(root: Path) -> dict:
     files=[p for p in root.rglob("*") if p.is_file()]
     items=[]
+    mats=[]
     for p in files:
         item={"path":str(p.relative_to(root)),"size_bytes":p.stat().st_size}
         if p.suffix.lower() in {".txt",".csv",".tsv",".md",".json"}:
             item["preview"]=_text_preview(p)
+        if p.suffix.lower()==".mat" and len(mats)<8:
+            mats.append(_mat_summary(p))
         items.append(item)
-    return {"file_count":len(files),"files":items[:100]}
+    return {"file_count":len(files),"files":items[:100],"mat_samples":mats}
 
 
 def inspect_face(root: Path) -> dict:
