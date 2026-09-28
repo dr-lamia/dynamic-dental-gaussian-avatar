@@ -131,12 +131,25 @@ def inspect_face(root: Path) -> dict:
 
 def main():
     root=Path("online_case")
+    figshare_meta_path=root/"dental"/"figshare_26965903.json"
+    figshare_files=[]
+    if figshare_meta_path.exists():
+        meta=json.loads(figshare_meta_path.read_text(encoding="utf-8"))
+        for item in meta.get("files", []):
+            figshare_files.append({
+                "name": item.get("name"),
+                "size": item.get("size"),
+                "download_url": item.get("download_url"),
+                "id": item.get("id"),
+            })
     report={
         "benchmark_label":"composite public-data engineering benchmark; not patient-specific",
         "dental":{
             "lower":_mesh_summary(root/"dental"/"0EJBIPTC_lower.obj"),
             "upper":_mesh_summary(root/"dental"/"0EJBIPTC_upper.vtk"),
             "source_case_id":"0EJBIPTC",
+            "figshare_26965903_file_count": len(figshare_files),
+            "figshare_26965903_files": figshare_files[:100],
         },
         "jaw":inspect_jaw(root/"jaw"),
         "face":inspect_face(root/"face"),
