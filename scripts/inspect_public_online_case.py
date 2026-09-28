@@ -77,7 +77,10 @@ def _mat_summary(path: Path) -> dict:
             item["min"]=float(np.nanmin(flat))
             item["max"]=float(np.nanmax(flat))
             item["mean"]=float(np.nanmean(flat))
-            if arr.size <= 100:
+            if arr.ndim == 2 and arr.shape[1] == 3:
+                item["first_rows"]=arr[:5].tolist()
+                item["last_rows"]=arr[-5:].tolist()
+            elif arr.size <= 100:
                 item["values"]=arr.tolist()
         variables[key]=item
     return {"path":str(path),"variables":variables}
@@ -87,11 +90,20 @@ def inspect_jaw(root: Path) -> dict:
     files=[p for p in root.rglob("*") if p.is_file()]
     items=[]
     mats=[]
+    preferred = [
+        root/"unpacked"/"Position Datasets"/"KREIVES"/"KKre1.mat",
+        root/"unpacked"/"Position Datasets"/"KREIVES"/"Kre1.mat",
+        root/"unpacked"/"Position Datasets"/"KUBAI"/"KKub1.mat",
+        root/"unpacked"/"Position Datasets"/"KUBAI"/"Kub1.mat",
+    ]
+    for p in preferred:
+        if p.exists():
+            mats.append(_mat_summary(p))
     for p in files:
         item={"path":str(p.relative_to(root)),"size_bytes":p.stat().st_size}
         if p.suffix.lower() in {".txt",".csv",".tsv",".md",".json"}:
             item["preview"]=_text_preview(p)
-        if p.suffix.lower()==".mat" and len(mats)<8:
+        if p.suffix.lower()==".mat" and len(mats)<8 and all(str(p) != m["path"] for m in mats):
             mats.append(_mat_summary(p))
         items.append(item)
     return {"file_count":len(files),"files":items[:100],"mat_samples":mats}
