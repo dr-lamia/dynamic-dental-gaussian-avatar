@@ -1,0 +1,33 @@
+{
+  "benchmark_id": "public-composite-4d-v1",
+  "claim_level": "engineering_benchmark_not_patient_specific",
+  "components": [
+    {
+      "role": "dental",
+      "source_name": "3D multimodal dental dataset based on CBCT and oral scan",
+      "source_url": "https://figshare.com/articles/dataset/_b_3D_multimodal_dental_dataset_based_on_CBCT_and_oral_scan_b_/26965903",
+      "local_path": "/data/dental_subject_001",
+      "source_subject_or_case_id": "PUBLIC_DENTAL_ID",
+      "license": "CC BY 4.0",
+      "notes": "Paired CBCT + oral-scan subject; keep this subject internally paired."
+    },
+    {
+      "role": "face_motion",
+      "source_name": "MultiFace",
+      "source_url": "https://github.com/facebookresearch/multiface",
+      "local_path": "/data/multiface_subset",
+      "source_subject_or_case_id": "PUBLIC_FACE_ID",
+      "license": null,
+      "notes": "Dynamic face identity; not assumed to be the dental subject."
+    },
+    {
+      "role": "jaw_motion_engineering",
+      "source_name": "Accelerometry-enhanced Magnetic Sensor for Intra-oral Continuous Jaw Motion Tracking",
+      "source_url": "https://figshare.com/articles/dataset/Accelerometry-enhanced_Magnetic_Sensor_for_Intra-oral_Continuous_Jaw_Motion_Tracking_and_Bruxism_Detection/13397528",
+      "local_path": "/data/jaw_tracking",
+      "source_subject_or_case_id": "SIMULATOR_TRAJECTORY",
+      "license": "CC BY 4.0",
+      "notes": "Engineering/simulator motion component; not clinical patient motion."
+    }
+  ]
+}
